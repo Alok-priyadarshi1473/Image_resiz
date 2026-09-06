@@ -1,166 +1,78 @@
-/**
- * ============================================================================
- * IMAGE RESIZER - MAIN JAVASCRIPT FILE
- * ============================================================================
- * 
- * This file contains all interactive functionality for the image resizer app.
- * Organized into logical sections for easy maintenance and understanding.
- * 
- * STRUCTURE:
- * 1. DOM Elements References
- * 2. Global State Variables
- * 3. Carousel Functionality
- * 4. Menu & Navigation
- * 5. File Upload & Validation
- * 6. Image Processing
- * 7. Modal Management
- * 8. Resize Controls
- * 9. Download Functionality
- * 10. Accordion
- * 11. Scroll Effects
- * 12. Notifications
- * 13. Interactions
- * 14. Animations
- * 15. Initialization
- * ============================================================================
- */
-
-// ============================================================================
-// 1. DOM ELEMENTS REFERENCES
-// ============================================================================
-// Carousel elements
 const scene = document.getElementById('scene');
 const carousel = document.getElementById('carousel');
-
-// Navigation elements
 const menuBtn = document.getElementById('menu-btn');
 const closeMenu = document.getElementById('closeMenu');
 const mobileMenu = document.getElementById('mobileMenu');
-
-// Upload elements
 const uploadBox = document.getElementById('uploadBox');
 const fileInput = document.getElementById('fileInput');
 const uploadPreview = document.getElementById('uploadPreview');
 const previewImg = document.getElementById('previewImg');
 const removeImg = document.getElementById('removeImg');
-
-// Sticky bar
 const stickyBar = document.getElementById('stickyBar');
 const stickyUpload = document.getElementById('stickyUpload');
-
-// Modal elements
 const resizeModal = document.getElementById('resizeModal');
 const modalOverlay = document.getElementById('modalOverlay');
 const modalClose = document.getElementById('modalClose');
 const cancelResize = document.getElementById('cancelResize');
 const downloadResized = document.getElementById('downloadResized');
 const resizePreviewImg = document.getElementById('resizePreviewImg');
-
-// Resize controls
 const widthInput = document.getElementById('widthInput');
 const heightInput = document.getElementById('heightInput');
 const qualitySelect = document.getElementById('qualitySelect');
 const lockAspect = document.getElementById('lockAspect');
-
-// Notifications & UI
 const toast = document.getElementById('toast');
 const toastMsg = document.getElementById('toastMsg');
-
-// Component collections
 const accordionBtns = document.querySelectorAll('.accordion-btn');
 const presetBtns = document.querySelectorAll('.preset-btn');
 const socialCards = document.querySelectorAll('.social-card');
-
-// ============================================================================
-// 2. GLOBAL STATE VARIABLES
-// ============================================================================
-let uploadedImage = null;        // Stores the uploaded image object
-let originalWidth = 0;           // Original image width
-let originalHeight = 0;          // Original image height
-let aspectRatio = 1;             // Image aspect ratio (width/height)
-let lastScrollY = window.scrollY; // Track scroll position for sticky bar
-let currentAngle = 0;            // Carousel rotation angle
-
-// ============================================================================
-// 3. CAROUSEL FUNCTIONALITY
-// ============================================================================
-/**
- * Rotates the 3D carousel to show the next platform card
- * Each click rotates 72 degrees (360 / 5 cards = 72)
- */
+let uploadedImage = null;       
+let originalWidth = 0;           
+let originalHeight = 0;          
+let aspectRatio = 1;             
+let lastScrollY = window.scrollY; 
+let currentAngle = 0;            
 scene.addEventListener('click', () => {
     currentAngle -= 72;
     carousel.style.transform = `rotateY(${currentAngle}deg)`;
 });
-
-// ============================================================================
-// 4. MENU & NAVIGATION
-// ============================================================================
-/**
- * Opens the mobile menu
- */
 menuBtn.addEventListener('click', () => {
-    mobileMenu.classList.add('active');
-    document.body.style.overflow = 'hidden'; // Prevent scrolling
+    const isOpen= mobileMenu.classList.toggle('active');
+    document.body.style.overflow = isOpen ? 'hidden':'';
 });
-
-/**
- * Closes the mobile menu
- */
 closeMenu.addEventListener('click', () => {
     mobileMenu.classList.remove('active');
     document.body.style.overflow = '';
 });
-
-/**
- * Closes menu when clicking on the menu itself (overlay)
- */
 mobileMenu.addEventListener('click', (e) => {
     if (e.target === mobileMenu) {
         mobileMenu.classList.remove('active');
         document.body.style.overflow = '';
     }
 });
-
-// ============================================================================
-// 5. FILE UPLOAD & VALIDATION
-// ============================================================================
-/**
- * Opens file picker when upload box is clicked
- */
+mobileMenu.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+        mobileMenu.classList.remove('active');
+        document.body.style.overflow = '';
+    });
+});
 uploadBox.addEventListener('click', () => {
     if (!uploadedImage) fileInput.click();
 });
-
-/**
- * Opens file picker from sticky bar
- */
 stickyUpload.addEventListener('click', (e) => {
     e.preventDefault();
     fileInput.click();
 });
-
-/**
- * Handles file input change event
- */
 fileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) handleFile(file);
 });
-
-/**
- * Handles drag and drop events
- * Manages dragenter, dragover, dragleave, and drop states
- */
 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => 
     uploadBox.addEventListener(eventName, (e) => {
         e.preventDefault();
         e.stopPropagation();
-        // Add visual feedback during drag
         if (eventName === 'dragenter' || eventName === 'dragover') {
             uploadBox.classList.add('dragover');
         }
-        // Remove visual feedback on exit or drop
         if (eventName === 'dragleave' || eventName === 'drop') {
             uploadBox.classList.remove('dragover');
         }
