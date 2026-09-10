@@ -4,68 +4,144 @@ const menuBtn = document.getElementById('menu-btn');
 const closeMenu = document.getElementById('closeMenu');
 const mobileMenu = document.getElementById('mobileMenu');
 const uploadBox = document.getElementById('uploadBox');
+const uploadBtn = document.getElementById('uploadBtn');
 const fileInput = document.getElementById('fileInput');
 const uploadPreview = document.getElementById('uploadPreview');
 const previewImg = document.getElementById('previewImg');
 const removeImg = document.getElementById('removeImg');
-const stickyBar = document.getElementById('stickyBar');
-const stickyUpload = document.getElementById('stickyUpload');
 const resizeModal = document.getElementById('resizeModal');
 const modalOverlay = document.getElementById('modalOverlay');
 const modalClose = document.getElementById('modalClose');
 const cancelResize = document.getElementById('cancelResize');
 const downloadResized = document.getElementById('downloadResized');
 const resizePreviewImg = document.getElementById('resizePreviewImg');
-const widthInput = document.getElementById('widthInput');
-const heightInput = document.getElementById('heightInput');
-const qualitySelect = document.getElementById('qualitySelect');
-const lockAspect = document.getElementById('lockAspect');
+const cropStage = document.getElementById('cropStage');
+const cropFrame = document.getElementById('cropFrame');
+const cropPresets = document.querySelectorAll('.crop-preset');
+const rotateLeft = document.getElementById('rotateLeft');
+const rotateRight = document.getElementById('rotateRight');
+const rotationValue = document.getElementById('rotationValue');
+const targetSizeSlider = document.getElementById('targetSizeSlider');
+const targetSizeUnit = document.getElementById('targetSizeUnit');
+const bestQualityBtn = document.getElementById('bestQualityBtn');
+const targetSizeValue = document.getElementById('targetSizeValue');
+const targetSizeHelp = document.getElementById('targetSizeHelp');
+const outputFormat = document.getElementById('outputFormat');
+const cropHandles = document.querySelectorAll('.crop-handle');
 const toast = document.getElementById('toast');
 const toastMsg = document.getElementById('toastMsg');
 const accordionBtns = document.querySelectorAll('.accordion-btn');
-const presetBtns = document.querySelectorAll('.preset-btn');
-const socialCards = document.querySelectorAll('.social-card');
-let uploadedImage = null;       
-let originalWidth = 0;           
-let originalHeight = 0;          
-let aspectRatio = 1;             
-let lastScrollY = window.scrollY; 
-let currentAngle = 0;            
-scene.addEventListener('click', () => {
-    currentAngle -= 72;
+const feedbackForm = document.getElementById('feedbackForm');
+let uploadedImage = null;
+let originalWidth = 0;
+let originalHeight = 0;
+let currentAngle = 0;
+let cropRatio = null;
+let cropLeft = 0;
+let cropTop = 0;
+let cropWidth = 0;
+let cropHeight = 0;
+let cropDragStartX = 0;
+let cropDragStartY = 0;
+let cropStartLeft = 0;
+let cropStartTop = 0;
+let cropStartWidth = 0;
+let cropStartHeight = 0;
+let isDraggingCrop = false;
+let isResizingCrop = false;
+let activeCropHandle = null;
+let rotation = 0;
+let pointerStartX = 0;
+let pointerStartY = 0;
+let isDraggingCarousel = false;
+let hasMovedCarousel = false;
+
+function rotateCarousel(direction) {
+    currentAngle += direction * 72;
     carousel.style.transform = `rotateY(${currentAngle}deg)`;
+}
+
+scene.addEventListener('pointerdown', (event) => {
+    pointerStartX = event.clientX;
+    pointerStartY = event.clientY;
+    isDraggingCarousel = true;
+    hasMovedCarousel = false;
+    scene.setPointerCapture(event.pointerId);
+    scene.classList.add('is-dragging');
 });
+scene.addEventListener('pointermove', (event) => {
+    if (!isDraggingCarousel) return;
+
+    const horizontalDistance = event.clientX - pointerStartX;
+    const verticalDistance = event.clientY - pointerStartY;
+    if (Math.abs(horizontalDistance) > 12 || Math.abs(verticalDistance) > 12) {
+        hasMovedCarousel = true;
+    }
+});
+
+scene.addEventListener('pointerup', (event) => {
+    if (!isDraggingCarousel) return;
+
+    const horizontalDistance = event.clientX - pointerStartX;
+    if (Math.abs(horizontalDistance) >= 30) {
+        rotateCarousel(horizontalDistance > 0 ? 1 : -1);
+    } else if (!hasMovedCarousel) {
+        rotateCarousel(-1);
+    }
+
+    isDraggingCarousel = false;
+    scene.classList.remove('is-dragging');
+    scene.releasePointerCapture(event.pointerId);
+});
+
+scene.addEventListener('pointercancel', (event) => {
+    isDraggingCarousel = false;
+    scene.classList.remove('is-dragging');
+    scene.releasePointerCapture(event.pointerId);
+});
+
 menuBtn.addEventListener('click', () => {
-    const isOpen= mobileMenu.classList.toggle('active');
-    document.body.style.overflow = isOpen ? 'hidden':'';
+    const isOpen = mobileMenu.classList.toggle('active');
+    document.body.style.overflow = isOpen ? 'hidden' : '';
 });
+
+
 closeMenu.addEventListener('click', () => {
     mobileMenu.classList.remove('active');
     document.body.style.overflow = '';
 });
+
+
 mobileMenu.addEventListener('click', (e) => {
     if (e.target === mobileMenu) {
         mobileMenu.classList.remove('active');
         document.body.style.overflow = '';
     }
 });
+
 mobileMenu.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', () => {
         mobileMenu.classList.remove('active');
         document.body.style.overflow = '';
     });
 });
+
 uploadBox.addEventListener('click', () => {
     if (!uploadedImage) fileInput.click();
 });
-stickyUpload.addEventListener('click', (e) => {
-    e.preventDefault();
-    fileInput.click();
+
+uploadBtn.addEventListener('click', (event) => {
+    event.stopPropagation();
+    if (!uploadedImage) fileInput.click();
 });
+
+
 fileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) handleFile(file);
 });
+
+
 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => 
     uploadBox.addEventListener(eventName, (e) => {
         e.preventDefault();
@@ -79,9 +155,7 @@ fileInput.addEventListener('change', (e) => {
     })
 );
 
-/**
- * Handles dropped files
- */
+
 uploadBox.addEventListener('drop', (e) => {
     const file = e.dataTransfer.files[0];
     if (file && file.type.startsWith('image/')) {
@@ -91,49 +165,27 @@ uploadBox.addEventListener('drop', (e) => {
     }
 });
 
-// ============================================================================
-// 6. IMAGE PROCESSING
-// ============================================================================
-/**
- * Validates and processes uploaded file
- * @param {File} file - The file to process
- */
 function handleFile(file) {
-    // Validate file type
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
     if (!validTypes.includes(file.type)) {
         showToast('File must be JPEG, JPG, PNG or WebP', 'error');
         return;
     }
-
-    // Validate file size (40MB limit)
-    const MAX_SIZE = 40 * 1024 * 1024; // 40MB
+    const MAX_SIZE = 40 * 1024 * 1024;
     if (file.size > MAX_SIZE) {
         showToast('File must be less than 40MB', 'error');
         return;
     }
-
-    // Read and process the file
     const reader = new FileReader();
     reader.onload = (e) => {
         uploadedImage = new Image();
         uploadedImage.onload = () => {
             originalWidth = uploadedImage.width;
             originalHeight = uploadedImage.height;
-            aspectRatio = originalWidth / originalHeight;
-            
-            // Display preview
             previewImg.src = e.target.result;
             uploadPreview.classList.add('active');
             uploadBox.querySelector('.upload-content').style.display = 'none';
-            
-            // Set default resize values
-            widthInput.value = originalWidth;
-            heightInput.value = originalHeight;
-            
             showToast('Image uploaded! Click to resize.');
-            
-            // Auto open resize modal after delay
             setTimeout(() => {
                 openResizeModal();
             }, 600);
@@ -143,9 +195,7 @@ function handleFile(file) {
     reader.readAsDataURL(file);
 }
 
-/**
- * Removes the uploaded image and shows upload prompt again
- */
+
 removeImg.addEventListener('click', (e) => {
     e.stopPropagation();
     uploadedImage = null;
@@ -156,158 +206,235 @@ removeImg.addEventListener('click', (e) => {
     showToast('Image removed');
 });
 
-/**
- * Opens resize modal when clicking on preview
- */
+
 uploadPreview.addEventListener('click', (e) => {
     if (e.target !== removeImg && !removeImg.contains(e.target)) {
         openResizeModal();
     }
 });
 
-// ============================================================================
-// 7. MODAL MANAGEMENT
-// ============================================================================
-/**
- * Opens the resize modal with the uploaded image
- */
 function openResizeModal() {
     if (!uploadedImage) {
         showToast('Please upload an image first', 'error');
         return;
     }
     resizePreviewImg.src = previewImg.src;
+    rotation = 0;
+    rotationValue.textContent = '0°';
     resizeModal.classList.add('active');
     document.body.style.overflow = 'hidden';
+    requestAnimationFrame(resetCropFrame);
 }
 
-/**
- * Closes the resize modal
- */
+
 function closeResizeModal() {
     resizeModal.classList.remove('active');
     document.body.style.overflow = '';
 }
-
-// Close modal when clicking overlay
 modalOverlay.addEventListener('click', closeResizeModal);
-
-// Close modal when clicking close button
 modalClose.addEventListener('click', closeResizeModal);
-
-// Close modal when clicking cancel button
 cancelResize.addEventListener('click', closeResizeModal);
 
-// ============================================================================
-// 8. RESIZE CONTROLS
-// ============================================================================
-/**
- * Syncs height with width when aspect ratio is locked
- */
-widthInput.addEventListener('input', () => {
-    if (lockAspect.checked) {
-        const newWidth = parseInt(widthInput.value) || 1;
-        heightInput.value = Math.round(newWidth / aspectRatio);
+function resetCropFrame() {
+    const stageWidth = cropStage.clientWidth;
+    const stageHeight = cropStage.clientHeight;
+    cropWidth = stageWidth * 0.8;
+    cropHeight = stageHeight * 0.8;
+    cropLeft = (stageWidth - cropWidth) / 2;
+    cropTop = (stageHeight - cropHeight) / 2;
+    applyCropRatio();
+    updateCropFrame();
+}
+
+function applyCropRatio() {
+    if (!cropRatio) return;
+    const stageWidth = cropStage.clientWidth;
+    const stageHeight = cropStage.clientHeight;
+    if (cropWidth / cropHeight > cropRatio) {
+        cropWidth = cropHeight * cropRatio;
+    } else {
+        cropHeight = cropWidth / cropRatio;
     }
+    cropWidth = Math.min(cropWidth, stageWidth);
+    cropHeight = Math.min(cropHeight, stageHeight);
+    cropLeft = Math.max(0, (stageWidth - cropWidth) / 2);
+    cropTop = Math.max(0, (stageHeight - cropHeight) / 2);
+}
+
+function updateCropFrame() {
+    cropFrame.style.left = `${cropLeft}px`;
+    cropFrame.style.top = `${cropTop}px`;
+    cropFrame.style.width = `${cropWidth}px`;
+    cropFrame.style.height = `${cropHeight}px`;
+}
+
+cropPresets.forEach(button => button.addEventListener('click', () => {
+    cropRatio = button.dataset.ratio === 'free' ? null : parseFloat(button.dataset.ratio);
+    cropPresets.forEach(item => item.classList.remove('active'));
+    button.classList.add('active');
+    applyCropRatio();
+    updateCropFrame();
+}));
+
+cropFrame.addEventListener('pointerdown', event => {
+    if (event.target.classList.contains('crop-handle')) return;
+    isDraggingCrop = true;
+    cropDragStartX = event.clientX;
+    cropDragStartY = event.clientY;
+    cropStartLeft = cropLeft;
+    cropStartTop = cropTop;
+    cropFrame.setPointerCapture(event.pointerId);
 });
 
-/**
- * Syncs width with height when aspect ratio is locked
- */
-heightInput.addEventListener('input', () => {
-    if (lockAspect.checked) {
-        const newHeight = parseInt(heightInput.value) || 1;
-        widthInput.value = Math.round(newHeight * aspectRatio);
+cropHandles.forEach(handle => handle.addEventListener('pointerdown', event => {
+    event.stopPropagation();
+    isResizingCrop = true;
+    activeCropHandle = handle.className;
+    cropDragStartX = event.clientX;
+    cropDragStartY = event.clientY;
+    cropStartLeft = cropLeft;
+    cropStartTop = cropTop;
+    cropStartWidth = cropWidth;
+    cropStartHeight = cropHeight;
+    cropFrame.setPointerCapture(event.pointerId);
+}));
+
+cropFrame.addEventListener('pointermove', event => {
+    if (isResizingCrop) {
+        const dx = event.clientX - cropDragStartX;
+        const dy = event.clientY - cropDragStartY;
+        const minSize = 40;
+        let nextLeft = cropStartLeft;
+        let nextTop = cropStartTop;
+        let nextWidth = cropWidth;
+        let nextHeight = cropHeight;
+        if (activeCropHandle.includes('right')) nextWidth = Math.max(minSize, Math.min(cropStage.clientWidth - cropStartLeft, cropStartWidth + dx));
+        if (activeCropHandle.includes('left')) {
+            nextLeft = Math.max(0, Math.min(cropStartLeft + cropStartWidth - minSize, cropStartLeft + dx));
+            nextWidth = cropStartWidth + cropStartLeft - nextLeft;
+        }
+        if (activeCropHandle.includes('bottom')) nextHeight = Math.max(minSize, Math.min(cropStage.clientHeight - cropStartTop, cropStartHeight + dy));
+        if (activeCropHandle.includes('top')) {
+            nextTop = Math.max(0, Math.min(cropStartTop + cropStartHeight - minSize, cropStartTop + dy));
+            nextHeight = cropStartHeight + cropStartTop - nextTop;
+        }
+        cropLeft = nextLeft;
+        cropTop = nextTop;
+        cropWidth = nextWidth;
+        cropHeight = nextHeight;
+        updateCropFrame();
+        return;
     }
+    if (!isDraggingCrop) return;
+    cropLeft = Math.max(0, Math.min(cropStage.clientWidth - cropWidth, cropStartLeft + event.clientX - cropDragStartX));
+    cropTop = Math.max(0, Math.min(cropStage.clientHeight - cropHeight, cropStartTop + event.clientY - cropDragStartY));
+    updateCropFrame();
 });
 
-/**
- * Handles preset size button clicks
- */
-presetBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-        const w = parseInt(btn.dataset.w);
-        const h = parseInt(btn.dataset.h);
-        widthInput.value = w;
-        heightInput.value = h;
-        
-        // Visual feedback - highlight selected preset
-        presetBtns.forEach(b => {
-            b.style.background = '';
-            b.style.color = '';
-        });
-        btn.style.background = 'var(--purple-primary)';
-        btn.style.color = 'white';
-    });
+cropFrame.addEventListener('pointerup', event => {
+    isDraggingCrop = false;
+    isResizingCrop = false;
+    activeCropHandle = null;
+    cropFrame.releasePointerCapture(event.pointerId);
 });
 
-// ============================================================================
-// 9. DOWNLOAD FUNCTIONALITY
-// ============================================================================
-/**
- * Downloads the resized image
- * Uses Canvas API for image resizing
- */
+function syncTargetSize() {
+    const size = parseInt(targetSizeSlider.value, 10) || 1;
+    bestQualityBtn.classList.remove('active');
+    targetSizeValue.textContent = `${size} ${targetSizeUnit.options[targetSizeUnit.selectedIndex].text}`;
+}
+
+targetSizeSlider.addEventListener('input', syncTargetSize);
+targetSizeUnit.addEventListener('change', syncTargetSize);
+bestQualityBtn.addEventListener('click', () => {
+    bestQualityBtn.classList.toggle('active');
+    targetSizeValue.textContent = bestQualityBtn.classList.contains('active') ? 'Best quality' : `${targetSizeSlider.value} ${targetSizeUnit.options[targetSizeUnit.selectedIndex].text}`;
+    targetSizeHelp.textContent = bestQualityBtn.classList.contains('active') ? 'No file-size limit' : 'Slide to choose the approximate file size';
+});
+
+function updateRotation() {
+    resizePreviewImg.style.transform = `rotate(${rotation}deg)`;
+    rotationValue.textContent = `${rotation}°`;
+}
+
+rotateLeft.addEventListener('click', () => {
+    rotation = (rotation + 270) % 360;
+    updateRotation();
+});
+
+rotateRight.addEventListener('click', () => {
+    rotation = (rotation + 90) % 360;
+    updateRotation();
+});
+
 downloadResized.addEventListener('click', () => {
     if (!uploadedImage) return;
     
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    const targetWidth = parseInt(widthInput.value) || originalWidth;
-    const targetHeight = parseInt(heightInput.value) || originalHeight;
-    const quality = parseFloat(qualitySelect.value);
-    
-    // Set canvas dimensions
-    canvas.width = targetWidth;
-    canvas.height = targetHeight;
-    
-    // Enable high-quality scaling
+    const scaleX = originalWidth / cropStage.clientWidth;
+    const scaleY = originalHeight / cropStage.clientHeight;
+    const sourceWidth = Math.max(1, Math.round(cropWidth * scaleX));
+    const sourceHeight = Math.max(1, Math.round(cropHeight * scaleY));
+    const sourceX = Math.round(cropLeft * scaleX);
+    const sourceY = Math.round(cropTop * scaleY);
+    const rotated = rotation % 180 !== 0;
+    const outputWidth = sourceWidth;
+    const outputHeight = sourceHeight;
+    canvas.width = rotated ? outputHeight : outputWidth;
+    canvas.height = rotated ? outputWidth : outputHeight;
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
-    ctx.drawImage(uploadedImage, 0, 0, targetWidth, targetHeight);
-    
-    // Determine output format
-    let mimeType = 'image/jpeg';
-    const file = fileInput.files[0];
-    if (file) {
-        if (file.type === 'image/png') mimeType = 'image/png';
-        else if (file.type === 'image/webp') mimeType = 'image/webp';
-    }
-    
-    // Convert canvas to blob and download
-    canvas.toBlob((blob) => {
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+    ctx.rotate(rotation * Math.PI / 180);
+    ctx.drawImage(uploadedImage, sourceX, sourceY, sourceWidth, sourceHeight, -outputWidth / 2, -outputHeight / 2, outputWidth, outputHeight);
+    const targetBytes = bestQualityBtn.classList.contains('active')
+        ? 0
+        : Math.round(parseInt(targetSizeSlider.value, 10) * parseInt(targetSizeUnit.value, 10));
+    exportToTargetSize(canvas, targetBytes, outputFormat.value, (blob) => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `resized-image-${targetWidth}x${targetHeight}.${mimeType.split('/')[1]}`;
+        a.download = `cropped-image.${blob.type.split('/')[1]}`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
         
-        showToast(`Image resized to ${targetWidth}x${targetHeight} and downloaded!`);
+        showToast('Cropped image downloaded successfully!');
         closeResizeModal();
-    }, mimeType, quality);
+    });
 });
 
-// ============================================================================
-// 10. ACCORDION
-// ============================================================================
-/**
- * Handles footer accordion toggle
- */
+function exportToTargetSize(canvas, targetBytes, mimeType, callback) {
+    if (!targetBytes) {
+        canvas.toBlob(callback, mimeType, 0.92);
+        return;
+    }
+    if (mimeType === 'image/png') {
+        canvas.toBlob(callback, mimeType);
+        return;
+    }
+    let quality = 0.92;
+    const tryExport = () => canvas.toBlob(blob => {
+        if (blob.size <= targetBytes || quality <= 0.2) {
+            callback(blob);
+            return;
+        }
+        quality -= 0.08;
+        tryExport();
+    }, mimeType, quality);
+    tryExport();
+}
+
 accordionBtns.forEach(btn => {
     btn.addEventListener('click', () => {
         const content = btn.nextElementSibling;
         const isActive = btn.classList.contains('active');
-        
-        // Close all accordion items
         accordionBtns.forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.accordion-content').forEach(c => 
             c.classList.remove('active')
         );
-        
-        // Open clicked item if it was closed
         if (!isActive) {
             btn.classList.add('active');
             content.classList.add('active');
@@ -315,32 +442,16 @@ accordionBtns.forEach(btn => {
     });
 });
 
-// ============================================================================
-// 11. SCROLL EFFECTS
-// ============================================================================
-/**
- * Hides/shows sticky bar based on scroll direction
- * Hidden when scrolling down, shown when scrolling up
- */
-window.addEventListener('scroll', () => {
-    const currentScrollY = window.scrollY;
-    
-    if (currentScrollY > lastScrollY && currentScrollY > 300) {
-        stickyBar.classList.add('hidden');
-    } else {
-        stickyBar.classList.remove('hidden');
-    }
-    lastScrollY = currentScrollY;
+feedbackForm.addEventListener('submit', event => {
+    event.preventDefault();
+    const feedback = new FormData(feedbackForm).get('feedback').trim();
+    const savedFeedback = JSON.parse(localStorage.getItem('imageResizerFeedback') || '[]');
+    savedFeedback.push({ feedback, submittedAt: new Date().toISOString() });
+    localStorage.setItem('imageResizerFeedback', JSON.stringify(savedFeedback));
+    feedbackForm.reset();
+    showToast('Thank you for your feedback!');
 });
 
-// ============================================================================
-// 12. NOTIFICATIONS (TOAST)
-// ============================================================================
-/**
- * Displays a toast notification message
- * @param {string} message - The message to display
- * @param {string} type - 'success' or 'error'
- */
 function showToast(message, type = 'success') {
     toastMsg.textContent = message;
     const icon = toast.querySelector('i');
@@ -359,35 +470,6 @@ function showToast(message, type = 'success') {
     }, 3000);
 }
 
-// ============================================================================
-// 13. INTERACTIONS
-// ============================================================================
-/**
- * Makes social media cards editable on click
- */
-socialCards.forEach(card => {
-    card.addEventListener('click', () => {
-        const handleEl = card.querySelector('.social-handle');
-        const currentHandle = handleEl.textContent;
-        const platform = card.querySelector('h3').textContent;
-        const newHandle = prompt(
-            `Enter your ${platform} ID/handle:`, 
-            currentHandle
-        );
-        
-        if (newHandle !== null && newHandle.trim() !== '') {
-            handleEl.textContent = newHandle.trim();
-            card.classList.remove('placeholder');
-            card.style.borderColor = 'var(--purple-primary)';
-            showToast(`${platform} ID updated!`);
-        }
-    });
-});
-
-/**
- * Keyboard shortcuts
- * ESC to close modal or menu
- */
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         if (resizeModal.classList.contains('active')) {
@@ -400,38 +482,6 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// ============================================================================
-// 14. ANIMATIONS
-// ============================================================================
-/**
- * Demo image carousel animation
- * Cycles through sample images automatically
- */
-const demoImages = [
-    'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&h=500&fit=crop',
-    'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=500&fit=crop',
-    'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=500&fit=crop',
-    'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=500&fit=crop'
-];
-let currentDemoIndex = 0;
-const demoImg = document.getElementById('demoImg');
-
-setInterval(() => {
-    currentDemoIndex = (currentDemoIndex + 1) % demoImages.length;
-    demoImg.style.opacity = '0';
-    setTimeout(() => {
-        demoImg.src = demoImages[currentDemoIndex];
-        demoImg.style.opacity = '1';
-    }, 300);
-}, 4000);
-
-// Smooth opacity transition for demo image
-demoImg.style.transition = 'opacity 0.3s ease';
-
-/**
- * Intersection Observer for scroll animations
- * Fades in elements as they come into view
- */
 const observerOptions = {
     threshold: 0.1,
     rootMargin: '0px 0px -50px 0px'
@@ -445,10 +495,8 @@ const observer = new IntersectionObserver((entries) => {
         }
     });
 }, observerOptions);
-
-// Observe sections for fade-in animation
 document.querySelectorAll(
-    '.step-card, .feature-content, .do-more-content, .social-card'
+    '.step-card'
 ).forEach(el => {
     el.style.opacity = '0';
     el.style.transform = 'translateY(20px)';
@@ -456,21 +504,12 @@ document.querySelectorAll(
     observer.observe(el);
 });
 
-// ============================================================================
-// 15. INITIALIZATION
-// ============================================================================
-/**
- * Page initialization - runs when DOM is fully loaded
- */
 window.addEventListener('DOMContentLoaded', () => {
-    // Fade in page on load
     document.body.style.opacity = '0';
     document.body.style.transition = 'opacity 0.4s ease';
     setTimeout(() => {
         document.body.style.opacity = '1';
     }, 100);
-    
-    // Console messages
     console.log(
         '%c Image Resizer Loaded ',
         'background: linear-gradient(135deg, #7B61FF, #5A3FD1);' +
