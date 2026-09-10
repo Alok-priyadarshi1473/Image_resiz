@@ -6,331 +6,88 @@
     <title>re-size image site</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVJkEZSMUkrQ6usKGiOxPeZSelected=" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
 </head>
 <body>
     <nav class="navbar">
         <div class="nav-left">
-            <button class="menu-btn"id="menu-btn">
+            <button class="menu-btn" id="menu-btn">
                 <i class="fas fa-bars"></i>
             </button>
             <div class="logo">
-
-                <svg class="adobe-logo"viewbox="0 0 30 26"fill="none">
-                    <path d="M19.50H30V26L19.5 0Z" fill="#FF0000"/>
-                    <path d="M15 9.5L21.526H17L14.5 19H9.5L15 9.5Z" fill="#FF0000"/>
-                </svg>
                 <span class="logo-text">Alok priyadarshi</span>
             </div>
         </div>
         <div class="nav-right">
-            <a href="#"class="sign-in-btn">Sign in</a>
+            <a href="../protfolio/index.html" class="sign-in-btn">My Portfolio</a>
         </div>
     </nav>
-    <div class="mobile-menu"id="mobileMenu">
+    <div class="mobile-menu" id="mobileMenu">
         <div class="menu-header">
             <span>Menu</span>
-            <button class="close-menu"id="closeMenu">
-                <i class="fas fa-times"></i>
-            </button>
+                <button class="close-menu" id="closeMenu"><i class="fas fa-times"></i></button>
         </div>
-        <ul class="menu-link">
-            <li><a href="#"><i class="fas fa-home"></i>Home</a></li>
-            <li><a href="#"><i class="fas fa-image"></i>Resize image</a></li>
-            <li><a href="#"><i class="fas fa-edit"></i>Edit photo</a></li>
-            <li><a href="#"><i class="fas fa-magic"></i>Remove Background</a></li>
-            <li><a href="#"><i class="fas fa-video"></i>Video Editor</a></li>
+        <ul class="menu-links">
+            <li><a href="../protfolio/index.html"target="_blank" rel="noopener noreferrer"><i class="fas fa-briefcase"></i>Portfolio</a></li>
+            <li><a href="https://www.linkedin.com/feed/" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i>LinkedIn</a></li>
+            <li><a href="https://github.com/Alok-priyadarshi1473" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i>GitHub</a></li>
+            <li><a href="https://www.youtube.com/@AlokPriyadarshi1472" target="_blank" rel="noopener noreferrer"><i class="fab fa-youtube"></i>YouTube</a></li>
+            <li><a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i>Instagram</a></li>
         </ul>
     </div>
-    
     <section class="container">
         <div class="hero-content">
             <h1 class="hero-title">Alok priyadarshi</h1>
-            <h1 id="hero-title1" >Free image resizer.</h1>
+            <h1 id="hero-title1">Free image resizer.</h1>
             <p class="hero-desc">Easily resize your images in one click using Alok, the quick and easy create-anything in the website. Use the online photo resizer to instantly change the dimensions of any image to share across your social channels.</p>
-        
-        <div class="both">
-            <div class="scene" id="scene">
-                <div class="carousel" id="carousel">
-            
-                    <div class="card instagram">
-                        <div class="icon"><img src="/logo.png"></div>
-                        <div class="title">Instagram</div>
-                        <div class="subtitle">Photos & Stories</div>
-                        <div class="hint">Tap to Rotate</div>
+            <div class="both">
+                <div class="scene" id="scene">
+                    <div class="carousel" id="carousel">
+                        <div class="card profile"><img class="profile-photo" src="photo/MY2.jpg" alt="Alok Priyadarshi">
+                            <div class="title">Alok Priyadarshi</div>
+                            <div class="subtitle">Creator & Developer</div>
+                        </div>
+                        <div class="card instagram"><div class="title">Instagram</div>
+                            <div class="subtitle">Photos & Stories</div>
+                        </div>
+                        <div class="card linkedin"><div class="title">LinkedIn</div>
+                            <div class="subtitle">Professional Network</div>
+                            <img class="qr-code" src="photo/linkedin.png" alt="Scan to open Alok's LinkedIn">
+                        </div>
+                        <div class="card github"><div class="title">GitHub</div>
+                            <div class="subtitle">Code & Projects</div>
+                            <img class="qr-code" src="photo/github.png" alt="Scan to open Alok's GitHub">
+                        </div>
+                        <div class="card youtube">
+                            <div class="title">YouTube</div>
+                                <div class="subtitle">Videos & Live Streams</div>
+                                <img class="qr-code" src="photo/yt.png" alt="Scan to open Alok's YouTube">
+                            </div>
                     </div>
-      <div class="card linkedin">
-        <div class="icon">💼</div>
-        <div class="title">LinkedIn</div>
-        <div class="subtitle">Professional Network</div>
-        <div class="hint">Tap to Rotate</div>
-      </div>
-      <div class="card github">
-        <div class="icon">🐙</div>
-        <div class="title">GitHub</div>
-        <div class="subtitle">Code & Projects</div>
-        <div class="hint">Tap to Rotate</div>
-      </div>
-      <div class="card youtube">
-        <div class="icon">▶️</div>
-        <div class="title">YouTube</div>
-        <div class="subtitle">Videos & Live Streams</div>
-        <div class="hint">Tap to Rotate</div>
-      </div>
-      <div class="card whatsapp">
-        <div class="icon">💬</div>
-        <div class="title">WhatsApp</div>
-        <div class="subtitle">Community Channel</div>
-        <div class="hint">Tap to Rotate</div>
-      </div>
                 </div>
-            </div>
-                   <div class="hero-meta">
-                        <div id="uploadBox" class="image-text">
-                            <div class="upload-content">
-                                <h3>Drag and drop an image<br>or<span>browser to upload.</span></h3>
-                                <button class="upload-btn" id="uploadBtn">Upload your photo</button>
-                                <p class="file-info">file must be JPEG, PNG, JPG and less then 50 MB.</p>
+                <div class="hero-meta">
+                    <div id="uploadBox" class="image-text">
+                        <div class="upload-content">
+                            <h3>Drag and drop an image<br>or <span>browse to upload.</span></h3>
+                            <button class="upload-btn" id="uploadBtn" type="button">Upload your photo</button>
+                            <p class="file-info">File must be JPEG, JPG, PNG or WebP and less than 40 MB.</p>
                                 <div class="features">
-                                    <span><span class="check">✔</span> Free to use</span>
-                                    <span><span class="check">✔</span> No credit card required</span>
+                                    <span><i class="fas fa-check check" aria-hidden="true"></i> Free to use</span>
+                                    <span><i class="fas fa-check check" aria-hidden="true"></i> No credit card required</span>
                                 </div>
-                            </div>
-                            <div id="uploadPreview" class="upload-preview">
-                                <img id="previewImg" src="" alt="Preview">
-                                <button id="removeImg" class="btn-remove">✕</button>
-                            </div>
                         </div>
+                        <div id="uploadPreview" class="upload-preview">
+                            <img id="previewImg" src="" alt="Preview">
+                            <button id="removeImg" class="btn-remove" type="button" aria-label="Remove uploaded image">
+                                <i class="fas fa-times" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
                         <input type="file" id="fileInput" accept="image/*" style="display:none;">
-                    </div>
-        </div>
-            <p id="blow-box">By uploading your image ,you agree to the alok servis and privacy policy</p>
-    </section>        
-        <section class="how-to-section">
-            <div class="container">
-                <h2 class="section-title light">How to resize an image.</h2>
-            <div class="steps-grid">
-               <div class="step-card">
-                   <div class="step-icon">
-                       <i class="fas fa-upload"></i>
-                   </div>
-                   <div class="step-content">
-                        <h3>1. Select</h3>
-                        <p>upload your JPG or PNG to our image resize tool.</p>
-                    </div>
-                </div>            
-                <div class="step-card">
-                    <div class="step-icon">
-                       <i class="fas fa-crop-alt"></i>
-                   </div>
-                   <div class="step-content">
-                       <h3>2. resize</h3>
-                        <p>Choose a desired aspect ratio and compress to any size</p>
-                   </div>
-                </div>
-                <div class="step-card">
-                    <div class="step-icon">
-                       <i class="fas fa-pencil-alt"></i>
-                   </div>
-                   <div class="step-content">
-                       <h3>3. Continue editing</h3>
-                       <p>Instantly download your resized image or keep editing</p>
-                    </div>
                 </div>
             </div>
-        </div>
-        </section>
-<!----vkcvfbewrluvbfilrugbf-->
- <section class="feature-section">
-        <div class="container">
-            <div class="feature-content">
-                <div class="feature-text">
-                    <h2 class="feature-title">Resize images online for free.</h2>
-                    <p class="feature-desc">
-                        Use our free online photo resizer to adjust the size and dimensions of any image in seconds — 
-                        perfect for posting to social media, printing, and more.
-                    </p>
-                    <p class="feature-note">
-                        Don't see the size you want? You can define custom sizes.
-                    </p>
-                </div>
-                <div class="feature-image">
-                    <div class="mockup-card">
-                        <div class="mockup-header">
-                            <span class="mockup-dot red"></span>
-                            <span class="mockup-dot yellow"></span>
-                            <span class="mockup-dot green"></span>
-                            <span class="mockup-title">Resize image</span>
-                        </div>
-                        <div class="mockup-body">
-                            <div class="mockup-img-box">
-                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=350&fit=crop" alt="Resize demo">
-                            </div>
-                            <div class="mockup-controls">
-                                <div class="control-row">
-                                    <label>Width</label>
-                                    <div class="control-input">
-                                        <input type="text" value="1080" readonly>
-                                        <span>px</span>
-                                    </div>
-                                </div>
-                                <div class="control-row">
-                                    <label>Height</label>
-                                    <div class="control-input">
-                                        <input type="text" value="1080" readonly>
-                                        <span>px</span>
-                                    </div>
-                                </div>
-                                <div class="control-toggle">
-                                    <span class="toggle-label active">Custom size</span>
-                                    <div class="toggle-switch active"></div>
-                                </div>
-                                <button class="mockup-btn">Resize</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <section class="do-more-section">
-        <div class="container">
-            <div class="do-more-content">
-                <div class="do-more-text">
-                    <h2 class="do-more-title">Do more with your image.</h2>
-                    <p class="do-more-desc">
-                        Unleash your creativity by exploring the photo editing capabilities and design tools in Adobe Express. 
-                        Remove backgrounds, apply filters, or add GIFs or animation for a dynamic design.
-                    </p>
-                </div>
-                <div class="do-more-image">
-                    <div class="editor-mockup">
-                        <div class="editor-sidebar">
-                            <div class="sidebar-item active"><i class="fas fa-crop-alt"></i></div>
-                            <div class="sidebar-item"><i class="fas fa-adjust"></i></div>
-                            <div class="sidebar-item"><i class="fas fa-magic"></i></div>
-                            <div class="sidebar-item"><i class="fas fa-font"></i></div>
-                            <div class="sidebar-item"><i class="fas fa-shapes"></i></div>
-                        </div>
-                        <div class="editor-canvas">
-                            <img src="https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?w=500&h=350&fit=crop" alt="Editor demo">
-                            <div class="canvas-overlay">
-                                <div class="resize-tool">
-                                    <i class="fas fa-expand-arrows-alt"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Sticky Bottom Bar -->
-    <div class="sticky-bar" id="stickyBar">
-        <div class="sticky-content">
-            <div class="sticky-left">
-                <div class="sticky-app-icon">
-                    <svg viewBox="0 0 30 26" fill="none">
-                        <path d="M19.5 0H30V26L19.5 0Z" fill="#FF0000"/>
-                        <path d="M10.5 0H0V26L10.5 0Z" fill="#FF0000"/>
-                        <path d="M15 9.5L21.5 26H17L14.5 19H9.5L15 9.5Z" fill="#FF0000"/>
-                    </svg>
-                </div>
-                <div class="sticky-app-info">
-                    <p class="sticky-label">Get the full experience in the app.</p>
-                    <div class="sticky-links">
-                        <span class="app-name"><i class="fas fa-cube"></i> Adobe Express</span>
-                        <a href="#" class="web-link"><i class="fas fa-globe"></i> Web version</a>
-                        <a href="#" class="upload-link" id="stickyUpload"><i class="fas fa-upload"></i> Upload photo</a>
-                    </div>
-                </div>
-            </div>
-            <div class="sticky-right">
-                <a href="#" class="btn-get-app">Get free app</a>
-            </div>
-        </div>
-    </div>
-<!--ldbfuywevbfukewbhvljbegrv liebvibegajhb-->
- <footer class="footer">
-        <div class="container">
-            <div class="footer-top">
-                <div class="footer-brand">
-                    <div class="footer-logo">
-                        <svg viewBox="0 0 30 26" fill="none">
-                            <path d="M19.5 0H30V26L19.5 0Z" fill="#FF0000"/>
-                            <path d="M10.5 0H0V26L10.5 0Z" fill="#FF0000"/>
-                            <path d="M15 9.5L21.5 26H17L14.5 19H9.5L15 9.5Z" fill="#FF0000"/>
-                        </svg>
-                        <span>Alok Priyadarshi</span>
-                    </div>
-                    <p class="footer-desc">
-                        Stand out, including dozens of quick action projects,templates, 
-                        photo editing and effects, and much more. Visit our 
-                        <a href="#">poartfolio</a> for details.
-                    </p>
-                </div>
-            </div>
-
-            <div class="footer-accordion"> 
-                <div class="accordion-item">
-                    <button class="accordion-btn">
-                        Feedback....and how its feel to use.
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="accordion-content">
-                        <a href="#">its a Feedback are create</a>
-                    </div>
-                </div>
-     <div class="accordion-item">
-                    <button class="accordion-btn">
-                        Contact
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="accordion-content">
-                        <a href="#">Contact us</a>
-                        <a href="#">Feedback</a>
-                        <a href="#">Request a feature</a>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <div class="footer-left">
-                    <div class="language-selector">
-                        <i class="fas fa-globe"></i>
-                        <span class="region">India - INR ₹</span>
-                    </div>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
-                        <a href="#"><i class="fab fa-tiktok"></i></a>
-                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-                <div class="footer-right">
-                    <svg class="footer-adobe-logo" viewBox="0 0 30 26" fill="none">
-                        <path d="M19.5 0H30V26L19.5 0Z" fill="#000"/>
-                        <path d="M10.5 0H0V26L10.5 0Z" fill="#000"/>
-                        <path d="M15 9.5L21.5 26H17L14.5 19H9.5L15 9.5Z" fill="#000"/>
-                    </svg>
-                </div>
-            </div>
-
-            <div class="footer-legal">
-                <p class="copyright">Copyright © 2026 Alok. All rights reserved.</p>
-                <div class="legal-links">
-                    <a href="#">Privacy</a>
-                </div>
-                <div class="adchoices">
-                    <a href="#"><i class="fas fa-ad"></i> AdChoices</a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Resize Modal -->
+        <p id="blow-box">By uploading your image, you agree to Alok's Terms of Service and Privacy Policy.</p>
+</section>
     <div class="modal" id="resizeModal">
         <div class="modal-overlay" id="modalOverlay"></div>
         <div class="modal-content">
@@ -340,39 +97,57 @@
             </div>
             <div class="modal-body">
                 <div class="resize-preview-box">
-                    <img src="" alt="Resize preview" id="resizePreviewImg">
+                    <div class="crop-stage" id="cropStage">
+                        <img src="" alt="Crop preview" id="resizePreviewImg">
+                        <div class="crop-frame" id="cropFrame" aria-label="Drag to choose crop area">
+                            <span class="crop-handle top-left"></span>
+                            <span class="crop-handle top-center"></span>
+                            <span class="crop-handle top-right"></span>
+                            <span class="crop-handle middle-left"></span>
+                            <span class="crop-handle middle-right"></span>
+                            <span class="crop-handle bottom-left"></span>
+                            <span class="crop-handle bottom-center"></span>
+                            <span class="crop-handle bottom-right"></span>
+                        </div>
+                    </div>
                 </div>
-                <div class="resize-controls">
-                    <div class="control-group">
-                        <label for="widthInput">Width (px)</label>
-                        <input type="number" id="widthInput" name="width" value="800" min="1">
+                <div class="crop-controls">
+                    <div class="crop-control-row">
+                        <span class="preset-label">Aspect ratio</span>
+                        <button class="crop-preset active" data-ratio="free">Free</button>
+                        <button class="crop-preset" data-ratio="1">1:1</button>
+                        <button class="crop-preset" data-ratio="1.7778">16:9</button>
+                        <button class="crop-preset" data-ratio="0.5625">9:16</button>
+                        <button class="crop-preset" data-ratio="1.3333">4:3</button>
+                    </div>
+                    <div class="crop-control-row">
+                        <span class="preset-label">Rotate</span>
+                        <button class="rotate-btn" id="rotateLeft" type="button"><i class="fas fa-undo"></i> Left</button>
+                        <button class="rotate-btn" id="rotateRight" type="button"><i class="fas fa-redo"></i> Right</button>
+                        <span class="rotation-value" id="rotationValue">0°</span>
+                    </div>
+                    <div class="control-group size-control">
+                        <label for="targetSizeSlider">Download size: <strong id="targetSizeValue">1 MB</strong></label>
+                        <div class="size-input-row">
+                            <input type="range" id="targetSizeSlider" min="1" max="4096" step="1" value="1" aria-label="Target download size">
+                            <select id="targetSizeUnit" aria-label="Target download size unit">
+                                <option value="1024">KB</option>
+                                <option value="1048576" selected>MB</option>
+                                <option value="1073741824">GB</option>
+                            </select>
+                            <button type="button" class="best-quality-btn" id="bestQualityBtn">Best quality</button>
+                        </div>
+                        <small class="size-help" id="targetSizeHelp">Slide to choose the approximate file size</small>
                     </div>
                     <div class="control-group">
-                        <label for="heightInput">Height (px)</label>
-                        <input type="number" id="heightInput" name="height" value="600" min="1">
-                    </div>
-                    <div class="control-group">
-                        <label for="qualitySelect">Quality</label>
-                        <select id="qualitySelect" name="quality">
-                            <option value="0.9">High (90%)</option>
-                            <option value="0.7" selected>Medium (70%)</option>
-                            <option value="0.5">Low (50%)</option>
+                        <label for="outputFormat">File format</label>
+                        <select id="outputFormat" name="outputFormat">
+                            <option value="image/jpeg" selected>JPEG</option>
+                            <option value="image/png">PNG</option>
+                            <option value="image/webp">WebP</option>
+                            <option value="image/avif">AVIF</option>
+                            <option value="image/bmp">BMP</option>
                         </select>
-                    </div>
-                    <div class="aspect-ratio-toggle">
-                        <label class="toggle-label" for="lockAspect">
-                            <input type="checkbox" id="lockAspect" name="lockAspect" checked>
-                            <span class="checkmark"></span>
-                            Lock aspect ratio
-                        </label>
-                    </div>
-                    <div class="preset-sizes">
-                        <span class="preset-label">Quick presets:</span>
-                        <button class="preset-btn" data-w="1080" data-h="1080">Instagram Post</button>
-                        <button class="preset-btn" data-w="1080" data-h="1920">Instagram Story</button>
-                        <button class="preset-btn" data-w="1200" data-h="630">Facebook</button>
-                        <button class="preset-btn" data-w="1500" data-h="500">Twitter Header</button>
-                        <button class="preset-btn" data-w="1920" data-h="1080">YouTube</button>
                     </div>
                 </div>
             </div>
@@ -384,12 +159,134 @@
             </div>
         </div>
     </div>
-
-    <!-- Toast Notification -->
     <div class="toast" id="toast">
         <i class="fas fa-check-circle"></i>
         <span id="toastMsg">Image resized successfully!</span>
+    </div>      
+<section class="how-to-section">
+    <div class="container">
+        <h2 class="section-title light">How to resize an image.</h2>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-icon">
+                    <i class="fas fa-upload"></i>
+                </div>
+                <div class="step-content">
+                    <h3>1. Select</h3>
+                    <p>upload your JPG or PNG to our image resize tool.</p>
+                </div>
+            </div>
+            <div class="step-card">
+                <div class="step-icon">
+                    <i class="fas fa-crop-alt"></i>
+                </div>
+                <div class="step-content">
+                    <h3>2. resize</h3>
+                    <p>Choose a desired aspect ratio and compress to any size</p>
+                </div>
+            </div>
+            <div class="step-card">
+                <div class="step-icon">
+                    <i class="fas fa-pencil-alt"></i>
+                </div>
+                <div class="step-content">
+                    <h3>3. Continue editing</h3>
+                    <p>Instantly download your resized image or keep editing</p>
+                </div>
+            </div>
+        </div>
     </div>
+</section>
+<section class="feature-section">
+    <div class="container">
+        <div class="feature-content">
+            <div class="feature-text">
+                <h2 class="feature-title">Resize images online for free.</h2>
+                <p class="feature-desc">Use our free online photo resizer to adjust the size and dimensions of any image in seconds - perfect for posting to social media, printing, and more.</p>
+                <p class="feature-note">Don't see the size you want? You can define custom sizes.</p>
+            </div>
+            <div class="feature-image">
+                <div class="mockup-card">
+                    <div class="mockup-header">
+                        <span class="mockup-dot red"></span>
+                        <span class="mockup-dot yellow"></span>
+                        <span class="mockup-dot green"></span>
+                        <span class="mockup-title">Resize image</span>
+                    </div>
+                    <div class="mockup-body">
+                        <div class="mockup-img-box">
+                            <img id="demoImg" src="photo/MY3.jpg" alt="Resize demo">
+                        </div>
+                        <div class="mockup-controls">
+                            <div class="control-row">
+                                <label>Width</label>
+                                <div class="control-input">
+                                    <input type="text" value="1080" readonly>
+                                    <span>px</span>
+                                </div>
+                            </div>
+                            <div class="control-row">
+                                <label>Height</label>
+                                <div class="control-input">
+                                    <input type="text" value="1080" readonly>
+                                    <span>px</span>
+                                </div>
+                            </div>
+                            <div class="control-toggle">
+                                <span class="toggle-label active">Custom size</span>
+                                <div class="toggle-switch active"></div>
+                            </div>
+                            <button class="mockup-btn">Resize</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<footer class="footer">
+    <div class="container">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <span>Alok Priyadarshi</span>
+                </div>
+                <p class="footer-desc">Stand out with quick action projects, templates, photo editing and effects. Visit our
+                <a href="../protfolio/index.html">portfolio</a> for details.</p>
+            </div>
+        </div>
+        <div class="footer-accordion">
+            <div class="accordion-item">
+                <button class="accordion-btn">Feedback and how it feels to use.
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="accordion-content">
+                    <form class="feedback-form" id="feedbackForm">
+                        <label for="feedbackText">Tell us what you think</label>
+                        <textarea id="feedbackText" name="feedback" rows="3" placeholder="Write your feedback here..." required>
+                        </textarea>
+                        <button type="submit">Send feedback</button>
+                    </form>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-btn">Contact
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="accordion-content">
+                    <a href="#">Contact us</a>
+                    <a href="#">Request a feature</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-legal">
+            <p class="copyright">Copyright 2026 Alok. All rights reserved.</p>
+            <div class="legal-links">
+                <a href="#">Privacy</a>
+            </div>
+        </div>
+    </div>
+</footer>
     <script src="script.js"></script>
 </body>
 </html>
