@@ -23,7 +23,7 @@ const rotateRight = document.getElementById('rotateRight');
 const rotationValue = document.getElementById('rotationValue');
 const targetSizeSlider = document.getElementById('targetSizeSlider');
 const targetSizeUnit = document.getElementById('targetSizeUnit');
-const bestQualityBtn = document.getElementById('bestQualityBtn');
+const targetSizeInput = document.getElementById('targetSizeInput');
 const targetSizeValue = document.getElementById('targetSizeValue');
 const targetSizeHelp = document.getElementById('targetSizeHelp');
 const outputFormat = document.getElementById('outputFormat');
@@ -55,12 +55,10 @@ let pointerStartX = 0;
 let pointerStartY = 0;
 let isDraggingCarousel = false;
 let hasMovedCarousel = false;
-
 function rotateCarousel(direction) {
     currentAngle += direction * 72;
     carousel.style.transform = `rotateY(${currentAngle}deg)`;
 }
-
 scene.addEventListener('pointerdown', (event) => {
     pointerStartX = event.clientX;
     pointerStartY = event.clientY;
@@ -71,77 +69,60 @@ scene.addEventListener('pointerdown', (event) => {
 });
 scene.addEventListener('pointermove', (event) => {
     if (!isDraggingCarousel) return;
-
     const horizontalDistance = event.clientX - pointerStartX;
     const verticalDistance = event.clientY - pointerStartY;
     if (Math.abs(horizontalDistance) > 12 || Math.abs(verticalDistance) > 12) {
         hasMovedCarousel = true;
     }
 });
-
 scene.addEventListener('pointerup', (event) => {
     if (!isDraggingCarousel) return;
-
     const horizontalDistance = event.clientX - pointerStartX;
     if (Math.abs(horizontalDistance) >= 30) {
         rotateCarousel(horizontalDistance > 0 ? 1 : -1);
     } else if (!hasMovedCarousel) {
         rotateCarousel(-1);
     }
-
     isDraggingCarousel = false;
     scene.classList.remove('is-dragging');
     scene.releasePointerCapture(event.pointerId);
 });
-
 scene.addEventListener('pointercancel', (event) => {
     isDraggingCarousel = false;
     scene.classList.remove('is-dragging');
     scene.releasePointerCapture(event.pointerId);
 });
-
 menuBtn.addEventListener('click', () => {
     const isOpen = mobileMenu.classList.toggle('active');
     document.body.style.overflow = isOpen ? 'hidden' : '';
 });
-
-
 closeMenu.addEventListener('click', () => {
     mobileMenu.classList.remove('active');
     document.body.style.overflow = '';
 });
-
-
 mobileMenu.addEventListener('click', (e) => {
     if (e.target === mobileMenu) {
         mobileMenu.classList.remove('active');
         document.body.style.overflow = '';
     }
 });
-
 mobileMenu.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', () => {
         mobileMenu.classList.remove('active');
         document.body.style.overflow = '';
     });
 });
-
 uploadBox.addEventListener('click', () => {
     if (!uploadedImage) fileInput.click();
 });
-
 uploadBtn.addEventListener('click', (event) => {
     event.stopPropagation();
     if (!uploadedImage) fileInput.click();
 });
-
-
 fileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) handleFile(file);
 });
-
-
 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => 
     uploadBox.addEventListener(eventName, (e) => {
         e.preventDefault();
@@ -154,8 +135,6 @@ fileInput.addEventListener('change', (e) => {
         }
     })
 );
-
-
 uploadBox.addEventListener('drop', (e) => {
     const file = e.dataTransfer.files[0];
     if (file && file.type.startsWith('image/')) {
@@ -164,7 +143,6 @@ uploadBox.addEventListener('drop', (e) => {
         showToast('Please upload an image file (JPEG, PNG, WebP)', 'error');
     }
 });
-
 function handleFile(file) {
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
     if (!validTypes.includes(file.type)) {
@@ -337,21 +315,28 @@ cropFrame.addEventListener('pointerup', event => {
     activeCropHandle = null;
     cropFrame.releasePointerCapture(event.pointerId);
 });
+function syncTargetSize(source = 'slider') {
+    let size = parseInt(targetSizeSlider.value, 10);
 
-function syncTargetSize() {
-    const size = parseInt(targetSizeSlider.value, 10) || 1;
-    bestQualityBtn.classList.remove('active');
-    targetSizeValue.textContent = `${size} ${targetSizeUnit.options[targetSizeUnit.selectedIndex].text}`;
+    if (source === 'input') {
+        size = parseInt(targetSizeInput.value, 10);
+        if (isNaN(size) || size < 1) size = 1;
+        if (size > 4096) size = 4096;
+        targetSizeSlider.value = size;
+        targetSizeInput.value = size;
+    } else if (source === 'slider') {
+        targetSizeInput.value = size;
+    }
+
+    const unitText = targetSizeUnit.options[targetSizeUnit.selectedIndex].text;
+    targetSizeValue.textContent = `${size} ${unitText}`;
+    targetSizeHelp.textContent = 'Slide ya type karke file size choose karo';
 }
-
-targetSizeSlider.addEventListener('input', syncTargetSize);
-targetSizeUnit.addEventListener('change', syncTargetSize);
-bestQualityBtn.addEventListener('click', () => {
-    bestQualityBtn.classList.toggle('active');
-    targetSizeValue.textContent = bestQualityBtn.classList.contains('active') ? 'Best quality' : `${targetSizeSlider.value} ${targetSizeUnit.options[targetSizeUnit.selectedIndex].text}`;
-    targetSizeHelp.textContent = bestQualityBtn.classList.contains('active') ? 'No file-size limit' : 'Slide to choose the approximate file size';
-});
-
+targetSizeSlider.addEventListener('input', () => syncTargetSize('slider'));
+targetSizeInput.addEventListener('input', () => syncTargetSize('input'));
+targetSizeInput.addEventListener('blur', () => syncTargetSize('input'));
+targetSizeUnit.addEventListener('change', () => syncTargetSize('slider'));
+syncTargetSize('slider');
 function updateRotation() {
     resizePreviewImg.style.transform = `rotate(${rotation}deg)`;
     rotationValue.textContent = `${rotation}°`;
@@ -388,9 +373,9 @@ downloadResized.addEventListener('click', () => {
     ctx.translate(canvas.width / 2, canvas.height / 2);
     ctx.rotate(rotation * Math.PI / 180);
     ctx.drawImage(uploadedImage, sourceX, sourceY, sourceWidth, sourceHeight, -outputWidth / 2, -outputHeight / 2, outputWidth, outputHeight);
-    const targetBytes = bestQualityBtn.classList.contains('active')
-        ? 0
-        : Math.round(parseInt(targetSizeSlider.value, 10) * parseInt(targetSizeUnit.value, 10));
+   const targetBytes = Math.round(
+    parseInt(targetSizeSlider.value, 10) * parseInt(targetSizeUnit.value, 10)
+);
     exportToTargetSize(canvas, targetBytes, outputFormat.value, (blob) => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -405,28 +390,107 @@ downloadResized.addEventListener('click', () => {
         closeResizeModal();
     });
 });
-
 function exportToTargetSize(canvas, targetBytes, mimeType, callback) {
     if (!targetBytes) {
         canvas.toBlob(callback, mimeType, 0.92);
         return;
     }
-    if (mimeType === 'image/png') {
+
+    if (mimeType === 'image/png' || mimeType === 'image/bmp') {
         canvas.toBlob(callback, mimeType);
         return;
     }
-    let quality = 0.92;
-    const tryExport = () => canvas.toBlob(blob => {
-        if (blob.size <= targetBytes || quality <= 0.2) {
-            callback(blob);
+
+    let low = 0.01;
+    let high = 0.95;
+    let bestBlob = null;
+
+    const binarySearch = () => {
+        if (high - low < 0.01) {
+            if (bestBlob && bestBlob.size <= targetBytes) {
+                callback(bestBlob);
+            } else {
+                shrinkDimensions(canvas, targetBytes, mimeType, callback);
+            }
             return;
         }
-        quality -= 0.08;
-        tryExport();
-    }, mimeType, quality);
-    tryExport();
+
+        const mid = (low + high) / 2;
+        canvas.toBlob((blob) => {
+            if (!blob) {
+                callback(null);
+                return;
+            }
+            if (blob.size <= targetBytes) {
+                bestBlob = blob;
+                low = mid;
+            } else {
+                high = mid;
+            }
+            binarySearch();
+        }, mimeType, mid);
+    };
+
+    binarySearch();
 }
 
+function shrinkDimensions(originalCanvas, targetBytes, mimeType, callback) {
+    let scale = 0.9;
+    const minScale = 0.05;
+
+    const attempt = () => {
+        if (scale < minScale) {
+            originalCanvas.toBlob((blob) => {
+                callback(blob);
+            }, mimeType, 0.05);
+            return;
+        }
+
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = Math.max(1, Math.round(originalCanvas.width * scale));
+        tempCanvas.height = Math.max(1, Math.round(originalCanvas.height * scale));
+
+        const tctx = tempCanvas.getContext('2d');
+        tctx.imageSmoothingEnabled = true;
+        tctx.imageSmoothingQuality = 'high';
+        tctx.drawImage(originalCanvas, 0, 0, tempCanvas.width, tempCanvas.height);
+
+        let low = 0.01;
+        let high = 0.95;
+        let bestBlob = null;
+
+        const binarySearch = () => {
+            if (high - low < 0.01) {
+                if (bestBlob && bestBlob.size <= targetBytes) {
+                    callback(bestBlob);
+                } else {
+                    scale *= 0.75;
+                    attempt();
+                }
+                return;
+            }
+
+            const mid = (low + high) / 2;
+            tempCanvas.toBlob((blob) => {
+                if (!blob) {
+                    callback(null);
+                    return;
+                }
+                if (blob.size <= targetBytes) {
+                    bestBlob = blob;
+                    low = mid;
+                } else {
+                    high = mid;
+                }
+                binarySearch();
+            }, mimeType, mid);
+        };
+
+        binarySearch();
+    };
+
+    attempt();
+} 
 accordionBtns.forEach(btn => {
     btn.addEventListener('click', () => {
         const content = btn.nextElementSibling;
