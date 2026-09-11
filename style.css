@@ -1252,25 +1252,57 @@ img {
 #targetSizeUnit {
     width: 88px;
 }
-
-.best-quality-btn {
-    padding: 0 12px;
+#targetSizeInput {
+    width: 90px;
+    padding: 8px 10px;
     border: 1px solid var(--border-light);
     border-radius: var(--radius-sm);
-    color: var(--text-secondary);
-    background: var(--bg-light);
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 600;
-    white-space: nowrap;
+    color: var(--text-primary);
+    text-align: center;
+    background: var(--bg-white);
+    outline: none;
+    transition: var(--transition);
 }
 
-.best-quality-btn.active,
-.best-quality-btn:hover {
-    color: white;
+#targetSizeInput:focus {
     border-color: var(--purple-primary);
-    background: var(--purple-primary);
+    box-shadow: 0 0 0 3px rgba(123, 97, 255, 0.1);
 }
 
+/* Number input ke default up/down arrows ko visible rakho */
+#targetSizeInput::-webkit-outer-spin-button,
+#targetSizeInput::-webkit-inner-spin-button {
+    -webkit-appearance: inner-spin-button;
+    opacity: 1;
+    height: 24px;
+    cursor: pointer;
+}
+
+/* Firefox ke liye */
+#targetSizeInput[type=number] {
+    -moz-appearance: number-input;
+    appearance: auto;
+}
+#targetSizeInput {
+    width: 90px;
+    padding: 8px 10px;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: center;
+    background: var(--bg-white);
+    outline: none;
+    transition: var(--transition);
+}
+
+#targetSizeInput:focus {
+    border-color: var(--purple-primary);
+    box-shadow: 0 0 0 3px rgba(123, 97, 255, 0.1);
+}
 .size-help {
     color: var(--text-muted);
     font-size: 12px;
