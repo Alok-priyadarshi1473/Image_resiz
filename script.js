@@ -325,7 +325,7 @@ function syncTargetSize(source = 'slider') {
         targetSizeSlider.value = size;
         targetSizeInput.value = size;
     } else if (source === 'slider') {
-        targetSizeInput.value = size;
+        targetSizeInput.value = size
     }
 
     const unitText = targetSizeUnit.options[targetSizeUnit.selectedIndex].text;
@@ -336,6 +336,9 @@ targetSizeSlider.addEventListener('input', () => syncTargetSize('slider'));
 targetSizeInput.addEventListener('input', () => syncTargetSize('input'));
 targetSizeInput.addEventListener('blur', () => syncTargetSize('input'));
 targetSizeUnit.addEventListener('change', () => syncTargetSize('slider'));
+targetSizeInput.addEventListener('focus', () => {
+    targetSizeInput.select();
+});
 syncTargetSize('slider');
 function updateRotation() {
     resizePreviewImg.style.transform = `rotate(${rotation}deg)`;
@@ -391,106 +394,76 @@ downloadResized.addEventListener('click', () => {
     });
 });
 function exportToTargetSize(canvas, targetBytes, mimeType, callback) {
-    if (!targetBytes) {
-        canvas.toBlob(callback, mimeType, 0.92);
-        return;
-    }
-
-    if (mimeType === 'image/png' || mimeType === 'image/bmp') {
-        canvas.toBlob(callback, mimeType);
-        return;
-    }
-
-    let low = 0.01;
-    let high = 0.95;
-    let bestBlob = null;
-
-    const binarySearch = () => {
-        if (high - low < 0.01) {
-            if (bestBlob && bestBlob.size <= targetBytes) {
-                callback(bestBlob);
-            } else {
-                shrinkDimensions(canvas, targetBytes, mimeType, callback);
-            }
+    const safeCallback = (blob) => {
+        if (!blob) {
+            canvas.toBlob((fallback) => {
+                callback(fallback);
+            }, 'image/jpeg', 0.5);
             return;
         }
-
-        const mid = (low + high) / 2;
-        canvas.toBlob((blob) => {
-            if (!blob) {
-                callback(null);
-                return;
-            }
-            if (blob.size <= targetBytes) {
-                bestBlob = blob;
-                low = mid;
-            } else {
-                high = mid;
-            }
-            binarySearch();
-        }, mimeType, mid);
+        callback(blob);
     };
-
-    binarySearch();
-}
-
-function shrinkDimensions(originalCanvas, targetBytes, mimeType, callback) {
-    let scale = 0.9;
-    const minScale = 0.05;
-
-    const attempt = () => {
-        if (scale < minScale) {
-            originalCanvas.toBlob((blob) => {
-                callback(blob);
-            }, mimeType, 0.05);
+    if (!targetBytes) {
+        canvas.toBlob(safeCallback, mimeType, 0.92);
+        return;
+    }
+    if (mimeType === 'image/png' || mimeType === 'image/bmp') {
+        canvas.toBlob(safeCallback, mimeType);
+        return;
+    }
+    canvas.toBlob((midBlob) => {
+        if (!midBlob) {
+            safeCallback(null);
             return;
         }
-
+        if (midBlob.size <= targetBytes) {
+            canvas.toBlob((highBlob) => {
+                if (highBlob && highBlob.size <= targetBytes) {
+                    safeCallback(highBlob);
+                } else {
+                    safeCallback(midBlob);
+                }
+            }, mimeType, 0.8);
+        } else {
+            canvas.toBlob((lowBlob) => {
+                if (lowBlob && lowBlob.size <= targetBytes) {
+                    safeCallback(lowBlob);
+                } else {
+                    shrinkDimensionsFast(canvas, targetBytes, mimeType, safeCallback);
+                }
+            }, mimeType, 0.25);
+        }
+    }, mimeType, 0.5);
+}
+function shrinkDimensionsFast(originalCanvas, targetBytes, mimeType, callback) {
+    const scales = [0.7, 0.5, 0.35, 0.25, 0.15];
+    let index = 0;
+    const attempt = () => {
+        if (index >= scales.length) {
+            originalCanvas.toBlob((fallback) => {
+                callback(fallback || null);
+            }, 'image/jpeg', 0.3);
+            return;
+        }
+        const scale = scales[index];
         const tempCanvas = document.createElement('canvas');
         tempCanvas.width = Math.max(1, Math.round(originalCanvas.width * scale));
         tempCanvas.height = Math.max(1, Math.round(originalCanvas.height * scale));
-
         const tctx = tempCanvas.getContext('2d');
         tctx.imageSmoothingEnabled = true;
         tctx.imageSmoothingQuality = 'high';
         tctx.drawImage(originalCanvas, 0, 0, tempCanvas.width, tempCanvas.height);
-
-        let low = 0.01;
-        let high = 0.95;
-        let bestBlob = null;
-
-        const binarySearch = () => {
-            if (high - low < 0.01) {
-                if (bestBlob && bestBlob.size <= targetBytes) {
-                    callback(bestBlob);
-                } else {
-                    scale *= 0.75;
-                    attempt();
-                }
-                return;
+        tempCanvas.toBlob((blob) => {
+            if (blob && blob.size <= targetBytes) {
+                callback(blob);
+            } else {
+                index++;
+                attempt();
             }
-
-            const mid = (low + high) / 2;
-            tempCanvas.toBlob((blob) => {
-                if (!blob) {
-                    callback(null);
-                    return;
-                }
-                if (blob.size <= targetBytes) {
-                    bestBlob = blob;
-                    low = mid;
-                } else {
-                    high = mid;
-                }
-                binarySearch();
-            }, mimeType, mid);
-        };
-
-        binarySearch();
+        }, mimeType, 0.7);
     };
-
     attempt();
-} 
+}
 accordionBtns.forEach(btn => {
     btn.addEventListener('click', () => {
         const content = btn.nextElementSibling;
